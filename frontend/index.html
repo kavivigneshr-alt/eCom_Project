@@ -3,14 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Minimal Store</title>
+  <title>E-Commerce Store</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
     body { background-color: #f8fafc; color: #1e293b; padding: 2rem 1rem; }
     .header { max-width: 1000px; margin: 0 auto 2rem; display: flex; justify-content: space-between; align-items: center; }
+    .nav-actions { display: flex; gap: 1rem; align-items: center; }
+    .auth-link { text-decoration: none; color: #2563eb; font-weight: 600; font-size: 0.95rem; cursor: pointer; }
     .badge { background: #0f172a; color: #fff; padding: 0.4rem 0.9rem; border-radius: 9999px; font-size: 0.9rem; }
     .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; max-width: 1000px; margin: 0 auto; }
-    .card { background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .card { background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; display: flex; flex-direction: column; }
     .card img { width: 100%; height: 240px; object-fit: cover; background: #e2e8f0; }
     .card-content { padding: 1.25rem; flex: 1; display: flex; flex-direction: column; }
     .title { font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem; }
@@ -24,7 +26,11 @@
 <body>
   <div class="header">
     <h2>E-Commerce Store</h2>
-    <div class="badge" id="cart-btn">Cart (0)</div>
+    <div class="nav-actions">
+      <span id="user-display"></span>
+      <a href="/login.html" id="auth-btn" class="auth-link">Login</a>
+      <div class="badge" id="cart-btn">Cart (0)</div>
+    </div>
   </div>
 
   <div class="grid" id="product-container">
@@ -33,6 +39,25 @@
 
   <script>
     let cart = [];
+
+    function updateNav() {
+      const user = localStorage.getItem('user_info');
+      const authBtn = document.getElementById('auth-btn');
+      const userDisplay = document.getElementById('user-display');
+
+      if (user) {
+        const parsed = JSON.parse(user);
+        userDisplay.textContent = `Hello, ${parsed.name}`;
+        authBtn.textContent = 'Logout';
+        authBtn.href = '#';
+        authBtn.onclick = (e) => {
+          e.preventDefault();
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('user_info');
+          window.location.reload();
+        };
+      }
+    }
 
     async function fetchProducts() {
       try {
@@ -67,6 +92,7 @@
       document.getElementById('cart-btn').textContent = `Cart (${cart.length})`;
     }
 
+    updateNav();
     fetchProducts();
   </script>
 </body>
